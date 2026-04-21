@@ -14,5 +14,8 @@
   "author": "Ethan Szeto",
   "type": "module",
   "main": "index.js",
-  "scripts": {}
+  "scripts": {
+    "serve": "python3 -m http.server 4570",
+    "serve:open": "python3 -m http.server 4570"
+  }
 }

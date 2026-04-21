@@ -15,6 +15,16 @@
         <canvas id="canvas" width="720" height="480"></canvas>
         <div id="control-panel">
           <div class="flex-col-container">
+            <div class="control-group">
+              <label for="convolution-preset-select">Convolution presets</label>
+              <select id="convolution-preset-select">
+                <option value="">Select preset image</option>
+                <option value="flowers.png">flowers.png</option>
+                <option value="horse.png">horse.png</option>
+                <option value="parthenon.jpg">parthenon.jpg</option>
+              </select>
+              <button id="convolution-load-preset-button" type="button">Load preset image</button>
+            </div>
             <button class="tool-button active" data-tool="none">Pointer</button>
             <button class="tool-button" data-tool="mean-filter">Mean Filter (Blur)</button>
             <button class="tool-button" data-tool="median-filter">Median Filter</button>
@@ -66,18 +76,23 @@
       </div>
 
       <div id="gradient-domain-space">
-        <h2>Gradient-domain image processing</h2>
+        <h2>Gradient-Domain Image Superimposition</h2>
         <div class="flex-row-container">
           <canvas id="gradient-canvas" width="720" height="480"></canvas>
           <div id="gradient-control-panel" class="flex-col-container">
             <div class="control-group">
               <label for="gradient-background-input">Background image</label>
               <input id="gradient-background-input" type="file" accept="image/*" />
+              <button id="gradient-load-hand-button" type="button">Use HandPhoto background</button>
             </div>
 
             <div class="control-group">
               <label for="gradient-overlay-input">Image to superimpose</label>
               <input id="gradient-overlay-input" type="file" accept="image/*" />
+              <div class="preset-button-row">
+                <button id="gradient-load-ear-button" type="button">Use ear overlay</button>
+                <button id="gradient-load-eye-button" type="button">Use eye overlay</button>
+              </div>
             </div>
 
             <div class="control-group">

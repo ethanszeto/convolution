@@ -89,6 +89,21 @@
   padding: 8px;
 }
 
+#convolution-preset-select,
+#convolution-load-preset-button,
+#gradient-load-hand-button,
+#gradient-load-ear-button,
+#gradient-load-eye-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+}
+
+.preset-button-row {
+  display: flex;
+  gap: 8px;
+}
+
 .control-group {
   margin-top: 14px;
 }

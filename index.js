@@ -11,6 +11,8 @@ const kernelInputs = document.querySelectorAll(".kernel-input");
 const kernelDivisorInput = document.getElementById("kernel-divisor");
 const deconvIterationsInput = document.getElementById("deconv-iterations");
 const deconvIterationsValue = document.getElementById("deconv-iterations-value");
+const convolutionPresetSelect = document.getElementById("convolution-preset-select");
+const convolutionLoadPresetButton = document.getElementById("convolution-load-preset-button");
 
 let currentTool = "none";
 let isPainting = false;
@@ -59,30 +61,20 @@ const FILTERS = {
 input.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (file) {
-    const img = new Image();
-    img.src = URL.createObjectURL(file);
+    loadConvolutionImageFromFile(file);
+  }
+});
 
-    img.onload = () => {
-      const imgWidth = img.width;
-      const imgHeight = img.height;
-
-      const ratio = imgWidth / imgHeight;
-
-      let scaledWidth, scaledHeight;
-
-      if (ratio > 1) {
-        const scale = width / imgWidth;
-        scaledWidth = width;
-        scaledHeight = imgHeight * scale;
-      } else {
-        const scale = height / imgHeight;
-        scaledWidth = imgWidth * scale;
-        scaledHeight = height;
-      }
-
-      ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
-      URL.revokeObjectURL(img.src);
-    };
+convolutionLoadPresetButton.addEventListener("click", async () => {
+  if (!convolutionPresetSelect.value) return;
+  const presetFile = convolutionPresetSelect.value;
+  const candidates = getConvolutionPresetUrlCandidates("convolution", presetFile);
+  try {
+    const image = await loadConvolutionImageFromCandidatePaths(candidates);
+    drawImageFittedOnConvolutionCanvas(image);
+  } catch (error) {
+    console.error(error);
+    alert(`Could not load preset image: ${presetFile}\n\nTried:\n${candidates.join("\n")}`);
   }
 });
 
@@ -266,6 +258,105 @@ function getCustomKernel() {
 
 function clamp(value) {
   return Math.max(0, Math.min(255, value));
+}
+
+function loadConvolutionImageFromFile(file) {
+  const img = new Image();
+  const objectUrl = URL.createObjectURL(file);
+  img.src = objectUrl;
+
+  img.onload = () => {
+    drawImageFittedOnConvolutionCanvas(img);
+    URL.revokeObjectURL(objectUrl);
+  };
+
+  img.onerror = () => {
+    URL.revokeObjectURL(objectUrl);
+  };
+}
+
+function drawImageFittedOnConvolutionCanvas(img) {
+  const imgWidth = img.width;
+  const imgHeight = img.height;
+  const ratio = imgWidth / imgHeight;
+
+  let scaledWidth;
+  let scaledHeight;
+
+  if (ratio > 1) {
+    const scale = width / imgWidth;
+    scaledWidth = width;
+    scaledHeight = imgHeight * scale;
+  } else {
+    const scale = height / imgHeight;
+    scaledWidth = imgWidth * scale;
+    scaledHeight = height;
+  }
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+}
+
+function loadImageFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    img.src = url;
+  });
+}
+
+async function loadConvolutionImageFromCandidatePaths(candidates) {
+  for (let i = 0; i < candidates.length; i += 1) {
+    try {
+      const image = await loadConvolutionImageFromResolvedUrl(candidates[i]);
+      return image;
+    } catch (_error) {
+      // Continue trying alternate paths.
+    }
+  }
+
+  throw new Error(`Failed to load preset from candidates: ${candidates.join(", ")}`);
+}
+
+function getConvolutionPresetUrlCandidates(folder, fileName) {
+  const currentDir = window.location.pathname.replace(/\/[^/]*$/, "/");
+  const fromCurrent = `${currentDir}public/${folder}/${fileName}`;
+  const fromParent = `${currentDir}../public/${folder}/${fileName}`;
+  return [
+    `public/${folder}/${fileName}`,
+    `./public/${folder}/${fileName}`,
+    `../public/${folder}/${fileName}`,
+    `${folder}/${fileName}`,
+    `./${folder}/${fileName}`,
+    `/public/${folder}/${fileName}`,
+    `/${folder}/${fileName}`,
+    fromCurrent,
+    fromParent,
+  ];
+}
+
+async function loadConvolutionImageFromResolvedUrl(candidate) {
+  const resolved = new URL(candidate, window.location.href).href;
+
+  try {
+    const response = await fetch(resolved, { cache: "no-cache" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    try {
+      return await loadImageFromUrl(blobUrl);
+    } finally {
+      URL.revokeObjectURL(blobUrl);
+    }
+  } catch (_error) {
+    // Fall back to direct image loading for environments where fetch is restricted.
+    return loadImageFromUrl(resolved);
+  }
 }
 
 function clampInt(value, min, max) {

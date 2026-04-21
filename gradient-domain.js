@@ -9,6 +9,9 @@ const gradientPosYInput = document.getElementById("gradient-pos-y");
 const gradientPosXValue = document.getElementById("gradient-pos-x-value");
 const gradientPosYValue = document.getElementById("gradient-pos-y-value");
 const gradientBlendButton = document.getElementById("gradient-blend-button");
+const gradientLoadHandButton = document.getElementById("gradient-load-hand-button");
+const gradientLoadEarButton = document.getElementById("gradient-load-ear-button");
+const gradientLoadEyeButton = document.getElementById("gradient-load-eye-button");
 
 const gradientState = {
   backgroundImage: null,
@@ -58,6 +61,42 @@ if (gradientCanvas && gradientCtx) {
 
   gradientBlendButton.addEventListener("click", () => {
     performPoissonBlend();
+  });
+
+  gradientLoadHandButton.addEventListener("click", async () => {
+    const candidates = getGradientPresetUrlCandidates("superimposition", "HandPhoto.jpg");
+    try {
+      gradientState.backgroundImage = await loadGradientImageFromCandidatePaths(candidates);
+      gradientState.baseImageData = null;
+      drawGradientScene();
+    } catch (error) {
+      console.error(error);
+      alert(`Could not load HandPhoto preset.\n\nTried:\n${candidates.join("\n")}`);
+    }
+  });
+
+  gradientLoadEarButton.addEventListener("click", async () => {
+    const candidates = getGradientPresetUrlCandidates("superimposition", "ear.png");
+    try {
+      gradientState.overlayImage = await loadGradientImageFromCandidatePaths(candidates);
+      resetOverlayPosition();
+      drawGradientScene();
+    } catch (error) {
+      console.error(error);
+      alert(`Could not load ear preset.\n\nTried:\n${candidates.join("\n")}`);
+    }
+  });
+
+  gradientLoadEyeButton.addEventListener("click", async () => {
+    const candidates = getGradientPresetUrlCandidates("superimposition", "EyePhoto.jpg");
+    try {
+      gradientState.overlayImage = await loadGradientImageFromCandidatePaths(candidates);
+      resetOverlayPosition();
+      drawGradientScene();
+    } catch (error) {
+      console.error(error);
+      alert(`Could not load eye preset.\n\nTried:\n${candidates.join("\n")}`);
+    }
   });
 
   drawGradientScene();
@@ -314,4 +353,69 @@ function loadImageFromFile(file) {
 
     image.src = objectUrl;
   });
+}
+
+function loadImageFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      resolve(image);
+    };
+    image.onerror = () => {
+      reject(new Error(`Failed to load image: ${url}`));
+    };
+    image.src = url;
+  });
+}
+
+async function loadGradientImageFromCandidatePaths(candidates) {
+  for (let i = 0; i < candidates.length; i += 1) {
+    try {
+      const image = await loadGradientImageFromResolvedUrl(candidates[i]);
+      return image;
+    } catch (_error) {
+      // Try next path variant.
+    }
+  }
+
+  throw new Error(`Failed to load preset from candidates: ${candidates.join(", ")}`);
+}
+
+function getGradientPresetUrlCandidates(folder, fileName) {
+  const currentDir = window.location.pathname.replace(/\/[^/]*$/, "/");
+  const fromCurrent = `${currentDir}public/${folder}/${fileName}`;
+  const fromParent = `${currentDir}../public/${folder}/${fileName}`;
+  return [
+    `public/${folder}/${fileName}`,
+    `./public/${folder}/${fileName}`,
+    `../public/${folder}/${fileName}`,
+    `${folder}/${fileName}`,
+    `./${folder}/${fileName}`,
+    `/public/${folder}/${fileName}`,
+    `/${folder}/${fileName}`,
+    fromCurrent,
+    fromParent,
+  ];
+}
+
+async function loadGradientImageFromResolvedUrl(candidate) {
+  const resolved = new URL(candidate, window.location.href).href;
+
+  try {
+    const response = await fetch(resolved, { cache: "no-cache" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    try {
+      return await loadImageFromUrl(blobUrl);
+    } finally {
+      URL.revokeObjectURL(blobUrl);
+    }
+  } catch (_error) {
+    return loadImageFromUrl(resolved);
+  }
 }

@@ -1,0 +1,116 @@
+#canvas {
+  background-color: darkgrey;
+  border: 1px solid black;
+  cursor: crosshair;
+  display: block;
+  flex-shrink: 0;
+}
+
+#control-panel {
+  margin-left: 16px;
+  min-width: 260px;
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-self: flex-start;
+}
+
+#input-container {
+  padding: 20px;
+  margin: 5px;
+  border: 1px solid black;
+}
+
+#tool-space {
+  padding: 20px;
+  margin: 5px;
+  border: 1px solid black;
+}
+
+#gradient-domain-space {
+  padding: 20px;
+  margin: 5px;
+  border: 1px solid black;
+}
+
+#gradient-canvas {
+  background-color: #f8f8f8;
+  border: 1px solid black;
+  display: block;
+  flex-shrink: 0;
+}
+
+#gradient-control-panel {
+  margin-left: 16px;
+  min-width: 260px;
+}
+
+#deconv-controls {
+  padding: 5px;
+  border: 1px solid black;
+}
+
+#custom {
+  padding: 5px;
+  border: 1px solid black;
+}
+
+.flex-row-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.flex-col-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tool-button {
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #666;
+  background-color: #f1f1f1;
+}
+
+.tool-button.active {
+  background-color: #cfe4ff;
+  border-color: #2f6ed4;
+}
+
+#apply-whole-image-button {
+  width: 100%;
+  padding: 8px;
+}
+
+#gradient-blend-button {
+  width: 100%;
+  padding: 8px;
+}
+
+.control-group {
+  margin-top: 14px;
+}
+
+.control-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #444;
+  line-height: 1.35;
+}
+
+#custom-kernel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.kernel-input,
+#kernel-divisor,
+#brush-size,
+#gradient-scale,
+#gradient-pos-x,
+#gradient-pos-y {
+  width: 100%;
+}

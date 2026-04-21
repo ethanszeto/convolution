@@ -1,0 +1,18 @@
+{
+  "name": "convolution",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/ethanszeto/convolution#readme",
+  "bugs": {
+    "url": "https://github.com/ethanszeto/convolution/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ethanszeto/convolution.git"
+  },
+  "license": "MIT",
+  "author": "Ethan Szeto",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {}
+}

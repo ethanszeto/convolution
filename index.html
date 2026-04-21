@@ -8,15 +8,20 @@
     <main>
       <div id="input-container">
         <h1>Applications of Linear Algebra in Photoshop</h1>
-        <input type="file" accept="image/*" id="image-input" />
       </div>
 
-      <div class="flex-row-container" id="tool-space">
-        <canvas id="canvas" width="720" height="480"></canvas>
-        <div id="control-panel">
-          <div class="flex-col-container">
-            <div class="control-group">
-              <label for="convolution-preset-select">Convolution presets</label>
+      <div id="tool-space">
+        <h2 class="section-title">Convolutional Filters</h2>
+        <div class="flex-row-container">
+          <canvas id="canvas" width="720" height="480"></canvas>
+          <div id="control-panel">
+          <div class="panel-section">
+            <h3>Image Source</h3>
+            <div class="control-group compact">
+              <label for="image-input">Upload image</label>
+              <input type="file" accept="image/*" id="image-input" />
+            </div>
+            <div class="control-group compact">
               <select id="convolution-preset-select">
                 <option value="">Select preset image</option>
                 <option value="flowers.png">flowers.png</option>
@@ -25,92 +30,106 @@
               </select>
               <button id="convolution-load-preset-button" type="button">Load preset image</button>
             </div>
-            <button class="tool-button active" data-tool="none">Pointer</button>
-            <button class="tool-button" data-tool="mean-filter">Mean Filter (Blur)</button>
-            <button class="tool-button" data-tool="median-filter">Median Filter</button>
-            <button class="tool-button" data-tool="edge-detection">Edge Detector</button>
-            <button class="tool-button" data-tool="diag-emboss">Emboss</button>
-            <button class="tool-button" data-tool="sharpen">Sharpen</button>
+          </div>
 
-            <div class="control-group" id="deconv-controls">
+          <div class="panel-section">
+            <h3>Filters</h3>
+            <div class="button-grid">
+              <button class="tool-button active" data-tool="none">Pointer</button>
+              <button class="tool-button" data-tool="mean-filter">Mean Filter</button>
+              <button class="tool-button" data-tool="median-filter">Median Filter</button>
+              <button class="tool-button" data-tool="edge-detection">Edge Detector</button>
+              <button class="tool-button" data-tool="diag-emboss">Emboss</button>
+              <button class="tool-button" data-tool="sharpen">Sharpen</button>
+            </div>
+          </div>
+
+          <div class="panel-section">
+            <h3>Tool Settings</h3>
+            <div class="control-group compact">
+              <label for="brush-size">Region Size: <span id="brush-size-value">40</span>px</label>
+              <input id="brush-size" type="range" min="5" max="120" step="1" value="40" />
+            </div>
+            <div class="control-group compact" id="deconv-controls">
               <button class="tool-button" data-tool="deconvolution">Deconvolution (RL)</button>
               <label for="deconv-iterations">RL iterations: <span id="deconv-iterations-value">12</span></label>
               <input id="deconv-iterations" type="range" min="1" max="40" step="1" value="12" />
             </div>
+          </div>
 
-            <div class="flex-col-container">
-              <div id="custom">
-                <button class="tool-button" data-tool="custom-filter">Custom 3x3</button>
-                <div class="control-group">
-                  <label for="kernel-divisor">Custom Divisor</label>
-                  <input id="kernel-divisor" type="number" value="1" />
-                </div>
-
-                <div class="control-group" id="custom-kernel-group">
-                  <p>Custom 3x3 Kernel (integers)</p>
-                  <div id="custom-kernel-grid">
-                    <input class="kernel-input" type="number" value="0" />
-                    <input class="kernel-input" type="number" value="-1" />
-                    <input class="kernel-input" type="number" value="0" />
-                    <input class="kernel-input" type="number" value="-1" />
-                    <input class="kernel-input" type="number" value="5" />
-                    <input class="kernel-input" type="number" value="-1" />
-                    <input class="kernel-input" type="number" value="0" />
-                    <input class="kernel-input" type="number" value="-1" />
-                    <input class="kernel-input" type="number" value="0" />
-                  </div>
-                </div>
+          <div class="panel-section" id="custom">
+            <h3>Custom 3x3</h3>
+            <button class="tool-button" data-tool="custom-filter">Activate custom filter</button>
+            <div class="control-group compact">
+              <label for="kernel-divisor">Custom Divisor</label>
+              <input id="kernel-divisor" type="number" value="1" />
+            </div>
+            <div class="control-group compact" id="custom-kernel-group">
+              <p>Kernel values</p>
+              <div id="custom-kernel-grid">
+                <input class="kernel-input" type="number" value="0" />
+                <input class="kernel-input" type="number" value="-1" />
+                <input class="kernel-input" type="number" value="0" />
+                <input class="kernel-input" type="number" value="-1" />
+                <input class="kernel-input" type="number" value="5" />
+                <input class="kernel-input" type="number" value="-1" />
+                <input class="kernel-input" type="number" value="0" />
+                <input class="kernel-input" type="number" value="-1" />
+                <input class="kernel-input" type="number" value="0" />
               </div>
             </div>
           </div>
 
-          <div class="control-group">
-            <label for="brush-size">Region Size: <span id="brush-size-value">40</span>px</label>
-            <input id="brush-size" type="range" min="5" max="120" step="1" value="40" />
-          </div>
-
-          <div class="control-group">
+          <div class="panel-section">
+            <h3>Apply</h3>
             <button id="apply-whole-image-button" type="button">Apply to whole image</button>
+          </div>
           </div>
         </div>
       </div>
 
       <div id="gradient-domain-space">
-        <h2>Gradient-Domain Image Superimposition</h2>
+        <h2 class="section-title">Gradient Image Superimposition</h2>
         <div class="flex-row-container">
           <canvas id="gradient-canvas" width="720" height="480"></canvas>
-          <div id="gradient-control-panel" class="flex-col-container">
-            <div class="control-group">
-              <label for="gradient-background-input">Background image</label>
-              <input id="gradient-background-input" type="file" accept="image/*" />
-              <button id="gradient-load-hand-button" type="button">Use HandPhoto background</button>
-            </div>
-
-            <div class="control-group">
-              <label for="gradient-overlay-input">Image to superimpose</label>
-              <input id="gradient-overlay-input" type="file" accept="image/*" />
-              <div class="preset-button-row">
-                <button id="gradient-load-ear-button" type="button">Use ear overlay</button>
-                <button id="gradient-load-eye-button" type="button">Use eye overlay</button>
+          <div id="gradient-control-panel">
+            <div class="panel-section">
+              <h3>Source Images</h3>
+              <div class="split-panels">
+                <div class="mini-panel">
+                  <label for="gradient-background-input">Background image</label>
+                  <input id="gradient-background-input" type="file" accept="image/*" />
+                  <button id="gradient-load-hand-button" type="button">Use HandPhoto background</button>
+                </div>
+                <div class="mini-panel">
+                  <label for="gradient-overlay-input">Image to superimpose</label>
+                  <input id="gradient-overlay-input" type="file" accept="image/*" />
+                  <div class="preset-button-row">
+                    <button id="gradient-load-ear-button" type="button">Use ear overlay</button>
+                    <button id="gradient-load-eye-button" type="button">Use eye overlay</button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="control-group">
-              <label for="gradient-scale"> Overlay scale: <span id="gradient-scale-value">100</span>% </label>
-              <input id="gradient-scale" type="range" min="1" max="100" step="1" value="50" />
+            <div class="panel-section">
+              <h3>Placement</h3>
+              <div class="control-group compact">
+                <label for="gradient-scale">Overlay scale: <span id="gradient-scale-value">100</span>%</label>
+                <input id="gradient-scale" type="range" min="1" max="100" step="1" value="50" />
+              </div>
+              <div class="control-group compact">
+                <label for="gradient-pos-x">Overlay X: <span id="gradient-pos-x-value">0</span></label>
+                <input id="gradient-pos-x" type="range" min="0" max="720" step="1" value="0" />
+              </div>
+              <div class="control-group compact">
+                <label for="gradient-pos-y">Overlay Y: <span id="gradient-pos-y-value">0</span></label>
+                <input id="gradient-pos-y" type="range" min="0" max="480" step="1" value="0" />
+              </div>
             </div>
 
-            <div class="control-group">
-              <label for="gradient-pos-x"> Overlay X: <span id="gradient-pos-x-value">0</span> </label>
-              <input id="gradient-pos-x" type="range" min="0" max="720" step="1" value="0" />
-            </div>
-
-            <div class="control-group">
-              <label for="gradient-pos-y"> Overlay Y: <span id="gradient-pos-y-value">0</span> </label>
-              <input id="gradient-pos-y" type="range" min="0" max="480" step="1" value="0" />
-            </div>
-
-            <div class="control-group">
+            <div class="panel-section">
+              <h3>Blend</h3>
               <button id="gradient-blend-button" type="button">Blend (Poisson)</button>
             </div>
           </div>
